@@ -1,6 +1,5 @@
 # LawSummBart
 
-markdown
 # ⚖️ Legal Document Summarization using Extract-Then-Assign (ETA) + LoRA Fine-Tuned BART
 
 This project implements an efficient and domain-adapted **legal document summarization system** using:
@@ -173,7 +172,7 @@ We evaluate using:
 
 ## 🏆 Results
 
-
+```
 ROUGE-1: 0.5723
 ROUGE-2: 0.3547
 ROUGE-L: 0.3169
@@ -181,7 +180,7 @@ ROUGE-L: 0.3169
 BERTScore Precision: 0.8453
 BERTScore Recall:    0.8535
 BERTScore F1:        0.8493
-
+```
 
 
 
