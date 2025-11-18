@@ -49,15 +49,6 @@ flowchart TD
     L --> M[🤖 LoRA Fine-Tuned BART-Large]
     
     M --> N[✅ Final Legal Summary]
-    
-    %% Styling
-    style A fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-    style B fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-    style C fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
-    style K fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-    style L fill:#fce4ec,stroke:#c2185b,stroke-width:2px
-    style M fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
-    style N fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
 
 ## 🧮 Training (BART + LoRA)
 
