@@ -24,80 +24,40 @@ The goal is to produce high-quality summaries for long Indian legal documents su
 
 ---
 
-
-**Alternative simpler version if you prefer:**
-
-```markdown
 ## 🧠 Project Architecture
 
-### 🔄 Pipeline Overview
+### 🔄 End-to-End Pipeline
 
-| Step | Process | Output |
-|------|---------|--------|
-| **1** | **Document Preprocessing**<br/>- Sentence splitting<br/>- Text cleaning<br/>- Chunking (≤512 tokens) | Cleaned document chunks |
-| **2** | **Extractive Summarization**<br/>- TextRank, LexRank, LSA<br/>- KL-Sum, LUHN, SumBasic<br/>- Legal-SBERT | 7 extractive summaries per document |
-| **3** | **ETA Assignment**<br/>- ROUGE similarity scoring<br/>- Length constraint validation<br/>- Optimal chunk assignment | 7× expanded training dataset |
-| **4** | **Model Fine-tuning**<br/>- BART-Large base model<br/>- LoRA parameter efficiency<br/>- Legal domain adaptation | Fine-tuned summarization model |
-| **5** | **Summary Generation**<br/>- Abstractive summarization<br/>- Legal context preservation<br/>- Coherent output | Final legal document summary |
-
-## 📦 Dataset
-
-We used publicly available legal datasets:
-
-- **Rishiai Dataset** – Indian court judgments with summaries  
-- **FIRE Legal Dataset** – Legal case documents and abstracts  
-
-### Preprocessing Steps:
-- Sentence splitting  
-- Removing citations & noise  
-- Chunking documents into <= 512 tokens  
-- Preparing extractive sentences for ETA  
-
----
-
-## 📘 Extractive Summarization Methods (7)
-
-| Method | Description |
-|--------|-------------|
-| **TextRank** | Graph-based ranking of sentences using PageRank |
-| **LexRank** | Similar to TextRank but uses cosine similarity + centrality |
-| **LSA** | Topic extraction using SVD on term–sentence matrix |
-| **KL-Sum** | Picks sentences minimizing KL divergence w.r.t. document |
-| **LUHN** | Uses frequency and sentence clusters to rank sentences |
-| **SumBasic** | Probability-based sentence selection using word frequency |
-| **Legal-SBERT** | Embedding-based semantic similarity for legal domain |
-
-Each method generates an extractive summary that is later used in ETA assignment.
-
----
-
-## 🧩 Extract-Then-Assign (ETA) — Core Idea
-
-ETA transforms long documents into multiple aligned (chunk, summary) pairs.
-
-### Steps:
-1. Generate 7 extractive summaries for each document.  
-2. Break the ground-truth summary into individual sentences.  
-3. For each GT sentence, compute similarity with each extractive summary:  
-   - ROUGE-1, ROUGE-2, ROUGE-L (average F1)  
-4. Take **average similarity across all extractive sentences** → final score.  
-5. Assign GT sentence to extractive summary with highest score.  
-6. Apply length constraint:  
-   > Assigned summary length must be ≤ 50% of extractive chunk length.  
-   If exceeded → use 2nd best extractive chunk.  
-7. Result: Up to 7 aligned training samples per document.
-
-### Example:
-
-
-GT Sentence: "Defendant’s motion was denied by the Court."
-E2 Extractive: ["On March 2, the contract...", "Defendant’s motion denied..."]
-Similarity ≈ 0.575  → highest score
-✔ Assigned to E2
-
-
-
----
+```mermaid
+flowchart TD
+    A[📄 Raw Legal Document] --> B[🛠️ Preprocessing]
+    
+    B --> C[📊 Extractive Summarization<br/>7 Methods]
+    
+    C --> D[TextRank]
+    C --> E[LexRank]
+    C --> F[LSA]
+    C --> G[KL-Sum]
+    C --> H[LUHN]
+    C --> I[SumBasic]
+    C --> J[SBERT]
+    
+    D & E & F & G & H & I & J --> K[🎯 Extract-Then-Assign ETA]
+    
+    K --> L[📈 Expanded Training Dataset<br/>7× Original Size]
+    
+    L --> M[🤖 LoRA Fine-Tuned BART-Large]
+    
+    M --> N[✅ Final Legal Summary]
+    
+    %% Styling
+    style A fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    style B fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    style C fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    style K fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    style L fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    style M fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    style N fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
 
 ## 🧮 Training (BART + LoRA)
 
