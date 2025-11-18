@@ -24,35 +24,21 @@ The goal is to produce high-quality summaries for long Indian legal documents su
 
 ---
 
+
+**Alternative simpler version if you prefer:**
+
+```markdown
 ## 🧠 Project Architecture
 
+### 🔄 Pipeline Overview
 
-
-Raw Legal Document
-│
-▼
-Preprocessing
-(sentence splitting, cleaning, chunking)
-│
-▼
-Extractive Summaries (7 methods)
-TextRank • LexRank • LSA • KL-Sum • LUHN • SumBasic • SBERT
-│
-▼
-Extract-Then-Assign (ETA)
-(assign each GT summary sentence to best extractive chunk)
-│
-▼
-Expanded Training Dataset (7×)
-│
-▼
-LoRA Fine-Tuned BART-Large
-│
-▼
-Final Legal Summary
-
-
----
+| Step | Process | Output |
+|------|---------|--------|
+| **1** | **Document Preprocessing**<br/>- Sentence splitting<br/>- Text cleaning<br/>- Chunking (≤512 tokens) | Cleaned document chunks |
+| **2** | **Extractive Summarization**<br/>- TextRank, LexRank, LSA<br/>- KL-Sum, LUHN, SumBasic<br/>- Legal-SBERT | 7 extractive summaries per document |
+| **3** | **ETA Assignment**<br/>- ROUGE similarity scoring<br/>- Length constraint validation<br/>- Optimal chunk assignment | 7× expanded training dataset |
+| **4** | **Model Fine-tuning**<br/>- BART-Large base model<br/>- LoRA parameter efficiency<br/>- Legal domain adaptation | Fine-tuned summarization model |
+| **5** | **Summary Generation**<br/>- Abstractive summarization<br/>- Legal context preservation<br/>- Coherent output | Final legal document summary |
 
 ## 📦 Dataset
 
