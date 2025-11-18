@@ -30,20 +30,48 @@ The goal is to produce high-quality summaries for long Indian legal documents su
 ### 🔄 End-to-End Pipeline
 
 ```mermaid
-flowchart TD
-    A[📄 Raw Legal Document] --> B[🛠️ Preprocessing]
-    B --> C[📊 Extractive Summarization<br/>7 Methods]
-    C --> D[TextRank]
-    C --> E[LexRank]
-    C --> F[LSA]
-    C --> G[KL-Sum]
-    C --> H[LUHN]
-    C --> I[SumBasic]
-    C --> J[SBERT]
-    D & E & F & G & H & I & J --> K[🎯 Extract-Then-Assign<br/>ETA]
-    K --> L[📈 Expanded Training Dataset<br/>7× Original Size]
-    L --> M[🤖 LoRA Fine-Tuned<br/>BART-Large]
-    M --> N[✅ Final Legal Summary]
+flowchart TB
+    subgraph Training["🎓 Training Phase: Extract-Then-Assign (ETA)"]
+        A1[📄 Training Data<br/>Source + Summary] --> B1[7 Extractive Methods]
+        B1 --> C1[Ext. Summ 1<br/>TextRank]
+        B1 --> C2[Ext. Summ 2<br/>LexRank]
+        B1 --> C3[Ext. Summ 3<br/>LSA]
+        B1 --> C4[Ext. Summ 4<br/>KL-Sum]
+        B1 --> C5[Ext. Summ 5<br/>LUHN]
+        B1 --> C6[Ext. Summ 6<br/>SumBasic]
+        B1 --> C7[Ext. Summ 7<br/>SBERT]
+        
+        C1 & C2 & C3 & C4 & C5 & C6 & C7 --> D1[🎯 Similarity Matching<br/>ROUGE + BERTScore]
+        D1 --> E1[Abstractive Summary<br/>Assignment]
+        E1 --> F1[📈 Expanded Dataset<br/>7× Original Size]
+        F1 --> G1[🤖 BART + LoRA<br/>Fine-Tuning]
+        G1 --> H1[✅ Fine-Tuned Model]
+    end
+    
+    subgraph Inference["🔍 Inference Phase: Summarization"]
+        A2[📄 Test Document] --> B2{Document Length}
+        B2 -->|Long| C2[Split into Chunks]
+        B2 -->|Short| D2[Single Chunk]
+        C2 --> E2[Chunk 1]
+        C2 --> E3[Chunk 2]
+        C2 --> E4[Chunk n]
+        D2 --> E2
+        
+        E2 & E3 & E4 --> F2[Fine-Tuned Model]
+        F2 --> G2[Summary 1]
+        F2 --> G3[Summary 2]
+        F2 --> G4[Summary n]
+        
+        G2 & G3 & G4 --> H2[Combine Summaries]
+        H2 --> I2[📋 Final Legal Summary]
+    end
+    
+    H1 -.->|Model Used| F2
+    
+    style Training fill:#e3f2fd
+    style Inference fill:#f3e5f5
+    style H1 fill:#4caf50,color:#fff
+    style I2 fill:#2196f3,color:#fff
 ```
 
 ---
