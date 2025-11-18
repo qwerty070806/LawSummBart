@@ -47,6 +47,9 @@ flowchart TD
 ```
 
 ---
+### Project Flow Diagram
+<img width="994" height="699" alt="block_dia drawio (3)" src="https://github.com/user-attachments/assets/bff1beff-e3b5-442d-baf6-6f3a26b538eb" />
+
 
 ## 🧮 Training (BART + LoRA)
 
@@ -80,6 +83,8 @@ TrainingArguments(
 )
 ```
 
+
+
 ### Why LoRA?
 
 * Trains only 5–10M parameters instead of 406M
@@ -87,6 +92,9 @@ TrainingArguments(
 * Faster fine-tuning on free GPUs (Kaggle, Colab)
 
 ---
+### Training Loss Curve
+<img width="2400" height="1500" alt="loss_curve" src="https://github.com/user-attachments/assets/0bfa2297-f492-48aa-8ae5-4e1bb120210c" />
+*Training and validation loss progression across epochs showing model convergence*
 
 ## 📊 Evaluation Metrics
 
@@ -134,3 +142,73 @@ BERTScore F1: 0.8493
 * HuggingFace Transformers
 * PEFT (LoRA)
 * ROUGE & BERTScore libraries
+
+---
+
+## 🚀 Quick Start - Using the Pre-trained Model
+
+You can use the deployed model directly from HuggingFace:
+
+### Installation
+
+```bash
+pip install -U "transformers==4.53.3" "huggingface_hub>=0.18.0" "accelerate>=0.18.0" "safetensors"
+```
+
+### Usage Example
+
+```python
+import warnings
+import torch
+warnings.filterwarnings("ignore")
+
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
+# Load the model and tokenizer
+tokenizer = AutoTokenizer.from_pretrained("qwertyqwerty070806/LawSummBart", trust_remote_code=True)
+model = AutoModelForSeq2SeqLM.from_pretrained("qwertyqwerty070806/LawSummBart", trust_remote_code=True)
+
+# Move to GPU if available
+try:
+    model = model.to("cuda")
+except AttributeError:
+    print("CUDA not available, using CPU")
+
+# Example legal text
+text = """On March 5, 2021, the Securities and Exchange Commission charged AT&T, Inc. with repeatedly
+violating Regulation FD, and three of its Investor Relations executives with aiding and abetting AT&T's 
+violations, by selectively disclosing material nonpublic information to research analysts..."""
+
+# Tokenize input
+inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=512).to("cuda")
+
+# Generate summary
+with torch.no_grad():
+    summary_ids = model.generate(
+        **inputs,
+        max_length=220,
+        min_length=80,
+        num_beams=5,
+        length_penalty=1.0,
+        no_repeat_ngram_size=3
+    )
+
+# Decode and print summary
+summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+print(summary)
+```
+
+### Model Parameters
+
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| `max_length` | 220 | Maximum length of generated summary |
+| `min_length` | 80 | Minimum length of generated summary |
+| `num_beams` | 5 | Beam search width for better quality |
+| `length_penalty` | 1.0 | Controls length preference |
+| `no_repeat_ngram_size` | 3 | Prevents repetitive phrases |
+
+### 🤗 Model Hub
+
+Find the model on HuggingFace: [qwertyqwerty070806/LawSummBart](https://huggingface.co/qwertyqwerty070806/LawSummBart)
+
